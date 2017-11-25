@@ -106,7 +106,7 @@ public class PairingActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_navigation) {
-            shoescom.checkStatusRight();
+            shoescom.runStatusChecks();
         } else if (id == R.id.nav_pairing) {
             startActivity(pairIntent);
         } else if (id == R.id.nav_credits) {
