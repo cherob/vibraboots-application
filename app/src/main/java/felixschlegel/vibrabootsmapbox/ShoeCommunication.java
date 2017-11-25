@@ -17,8 +17,24 @@ public class ShoeCommunication {
     private String port = "1841";
 
 
-    private boolean hasRightShoe = true;
-    private boolean hasLeftShoe = true;
+    private boolean hasRightShoe = false;
+    private boolean hasLeftShoe = false;
+
+    public boolean checkStatusRight() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                String result = "";
+                try {
+                    result = sendingGetRequest("http://" + ipRight + ":" + port + "/status");
+                } catch (Exception e) {
+                    Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
+                }
+                Log.d(ShoeCommunication.class.getName(), result);
+            }
+        });
+        return true;
+    }
 
     public boolean getStatusRight() {
         return hasRightShoe;
@@ -51,7 +67,7 @@ public class ShoeCommunication {
     }
 
     // HTTP GET request
-    private void sendingGetRequest(String msg) throws Exception {
+    private String sendingGetRequest(String msg) throws Exception {
 
         String urlString = (msg);
 
@@ -81,6 +97,8 @@ public class ShoeCommunication {
 
         //printing result from response
         System.out.println(response.toString());
+
+        return response.toString();
 
     }
 
