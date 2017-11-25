@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VibraBoots Mapbox</string>
+    <string name="app_name">Vibra Boots</string>
     <string name="title_activity_navigation">Navigation</string>
     <string name="title_activity_pairing">Pairing</string>
 
@@ -7,4 +7,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
+
+    <string name="content_wifi">Wi-Fi Image</string>
+
+    <string name="title_state_online">Online</string>
+    <string name="title_state_offline">Offline</string>
 </resources>

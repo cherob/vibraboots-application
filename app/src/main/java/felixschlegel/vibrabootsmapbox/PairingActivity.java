@@ -1,6 +1,8 @@
 package felixschlegel.vibrabootsmapbox;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,16 +15,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class PairingActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_pairing);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Button cbutton_left = (Button) findViewById(R.id.button_left);
+        cbutton_left.setOnClickListener(this);
+        Button cbutton_right = (Button) findViewById(R.id.button_right);
+        cbutton_right.setOnClickListener(this);
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -74,8 +86,15 @@ public class PairingActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        //define the Activity's
         Intent navIntent = new Intent(this, NavigationActivity.class);
         Intent pairIntent = new Intent(this, PairingActivity.class);
+
+        //clear duplicated Activity's
+        navIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pairIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
 
         int id = item.getItemId();
 
@@ -87,8 +106,32 @@ public class PairingActivity extends AppCompatActivity
 
         }
 
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        TextView text=(TextView)findViewById(R.id.text_state);
+        switch (v.getId()) {
+            case  R.id.button_left: {
+                text.setText(R.string.title_state_online);
+                break;
+            }
+            case R.id.button_right: {
+                
+                String connectivity_context = Context.WIFI_SERVICE;
+                final WifiManager wifiManager = (WifiManager)getSystemService(connectivity_context);
+
+                WifiAPController wifiAPController  = new WifiAPController();
+                wifiAPController.wifiToggle("mHotspot", "12345678", wifiManager, this);
+
+                text.setText(R.string.title_state_offline);
+                break;
+            }
+        }
     }
 }
