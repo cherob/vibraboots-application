@@ -8,10 +8,15 @@
 
     <string name="action_settings">Settings</string>
 
+<<<<<<< HEAD
 
 
     <string name="content_wifi">Wi-Fi Image</string>
 
     <string name="title_state_online">Online</string>
     <string name="title_state_offline">Offline</string>
+=======
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+>>>>>>> 1ff2ddec190693ce6f2c18dd682e31c6baf4677a
 </resources>

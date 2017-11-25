@@ -19,9 +19,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class PairingActivity extends AppCompatActivity
+<<<<<<< HEAD
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+=======
 
-    @Override
+
+
+        implements NavigationView.OnNavigationItemSelectedListener {
+>>>>>>> 1ff2ddec190693ce6f2c18dd682e31c6baf4677a
+
+
+
+@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
