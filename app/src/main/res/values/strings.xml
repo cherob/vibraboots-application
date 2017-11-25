@@ -11,6 +11,7 @@
 
 
     <string name="content_wifi">Wi-Fi Image</string>
+    <string name="title_find">finde die Schuhe</string>
 
     <string name="title_state_online">Online</string>
     <string name="title_state_offline">Offline</string>
