@@ -12,6 +12,9 @@ import android.view.View;
 
 public class NavigationActivity extends AppCompatActivity implements FragmentChangeListener{
 
+    public double latitude;
+    public double longitude;
+
 
     @Override
     public void replaceFragment(Fragment fragment) {
