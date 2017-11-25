@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -16,24 +17,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import static android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS;
 
 public class PairingActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+
+    static boolean wifiIsActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         setContentView(R.layout.activity_pairing);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button cbutton_left = (Button) findViewById(R.id.button_left);
+        Button cbutton_left = (Button) findViewById(R.id.button_find);
         cbutton_left.setOnClickListener(this);
-        Button cbutton_right = (Button) findViewById(R.id.button_right);
-        cbutton_right.setOnClickListener(this);
-
+        Button cbutton_state = (Button) findViewById(R.id.button_state);
+        cbutton_state.setOnClickListener(this);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -104,6 +110,9 @@ public class PairingActivity extends AppCompatActivity
             startActivity(pairIntent);
         } else if (id == R.id.nav_credits) {
 
+        } else if (id == R.id.nav_perm){
+            Intent getPerm = new Intent(ACTION_MANAGE_WRITE_SETTINGS);
+            startActivity(getPerm);
         }
 
 
@@ -115,21 +124,30 @@ public class PairingActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        TextView text=(TextView)findViewById(R.id.text_state);
         switch (v.getId()) {
-            case  R.id.button_left: {
-                text.setText(R.string.title_state_online);
+            case R.id.button_find: {
                 break;
             }
-            case R.id.button_right: {
-                
-                String connectivity_context = Context.WIFI_SERVICE;
-                final WifiManager wifiManager = (WifiManager)getSystemService(connectivity_context);
 
-                WifiAPController wifiAPController  = new WifiAPController();
-                wifiAPController.wifiToggle("mHotspot", "12345678", wifiManager, this);
-
-                text.setText(R.string.title_state_offline);
+            case R.id.button_state: {
+                ImageView wifi=(ImageView) findViewById(R.id.image_wifi);
+                TextView button=(TextView)findViewById(R.id.button_state);
+                if(wifiIsActive == false) {
+                    WifiAccessManager.setWifiApState(this, true);
+                    button.setText(R.string.title_state_online);
+                    wifi.setImageResource(R.drawable.wi_fi);
+                    wifiIsActive = true;
+                }else if(wifiIsActive == true){
+                    WifiAccessManager.setWifiApState(this, false);
+                    button.setText(R.string.title_state_offline);
+                    wifi.setImageResource(R.drawable.wi_fi_off);
+                    wifiIsActive = false;
+                }else{
+                    WifiAccessManager.setWifiApState(this, true);
+                    button.setText(R.string.title_state_online);
+                    wifi.setImageResource(R.drawable.wi_fi);
+                    wifiIsActive = true;
+                }
                 break;
             }
         }
