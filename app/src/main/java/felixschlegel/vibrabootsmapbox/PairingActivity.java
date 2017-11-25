@@ -15,9 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class PairingActivity extends AppCompatActivity
+
+
+
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @Override
+
+
+@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pairing);
