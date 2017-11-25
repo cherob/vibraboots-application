@@ -23,6 +23,5 @@ public class App extends Application {
         super.onCreate();
         mInstance = this;
         mShoes = new ShoeCommunication();
-        mShoes.runStatusChecks();
     }
 }

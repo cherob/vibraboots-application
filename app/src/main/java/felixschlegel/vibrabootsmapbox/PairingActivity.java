@@ -20,12 +20,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import static android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS;
 
 public class PairingActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     static boolean wifiIsActive;
+    private ImageView leftShoe;
+    private ImageView rightShoe;
+    private Button cbutton_left;
+    private Button cbutton_state;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +44,18 @@ public class PairingActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button cbutton_left = (Button) findViewById(R.id.button_find);
+
+        leftShoe = (ImageView) findViewById(R.id.image_stateLeft);
+        rightShoe = (ImageView) findViewById(R.id.image_stateRight);
+
+        cbutton_left = (Button) findViewById(R.id.button_find);
         cbutton_left.setOnClickListener(this);
-        Button cbutton_state = (Button) findViewById(R.id.button_state);
+        cbutton_state = (Button) findViewById(R.id.button_state);
         cbutton_state.setOnClickListener(this);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -51,9 +63,34 @@ public class PairingActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        wifiIsActive = WifiAccessManager.getWifiApState(this);
+
         //MapBox implementation
         //MapboxNavigation navigation = new MapboxNavigation(this, "sk.eyJ1IjoiZmxhZ3Bvc3QiLCJhIjoiY2phZjdvcGo2MXdpbzJ5anV6MHVyem92OCJ9.Mksti-6N6yCiDhyHM-lGcQ");
 
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        if (App.getInstance().getShoeCommunication().getStatusLeft() == true) {
+            leftShoe.setImageResource(R.drawable.green_left);
+        } else if (App.getInstance().getShoeCommunication().getStatusLeft() == false) {
+            leftShoe.setImageResource(R.drawable.red_left);
+        } else {
+            leftShoe.setImageResource(R.drawable.inactive_left);
+        }
+
+
+
+        if (App.getInstance().getShoeCommunication().getStatusRight() == true) {
+            rightShoe.setImageResource(R.drawable.green_right);
+        } else if (App.getInstance().getShoeCommunication().getStatusRight() == false) {
+            rightShoe.setImageResource(R.drawable.red_right);
+        } else {
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
     }
 
     @Override
@@ -132,21 +169,19 @@ public class PairingActivity extends AppCompatActivity
             case R.id.button_state: {
                 ImageView wifi=(ImageView) findViewById(R.id.image_wifi);
                 TextView button=(TextView)findViewById(R.id.button_state);
-                if(wifiIsActive == false) {
+                if(!wifiIsActive) {
                     WifiAccessManager.setWifiApState(this, true);
                     button.setText(R.string.title_state_online);
                     wifi.setImageResource(R.drawable.wi_fi);
                     wifiIsActive = true;
-                }else if(wifiIsActive == true){
+                    App.getInstance().getShoeCommunication().runStatusChecks();
+                }else if(wifiIsActive){
                     WifiAccessManager.setWifiApState(this, false);
                     button.setText(R.string.title_state_offline);
                     wifi.setImageResource(R.drawable.wi_fi_off);
                     wifiIsActive = false;
-                }else{
-                    WifiAccessManager.setWifiApState(this, true);
-                    button.setText(R.string.title_state_online);
-                    wifi.setImageResource(R.drawable.wi_fi);
-                    wifiIsActive = true;
+                    leftShoe.setImageResource(R.drawable.inactive_left);
+                    rightShoe.setImageResource(R.drawable.inactive_right);
                 }
                 break;
             }
