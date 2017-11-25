@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NavigationActivityFragment extends Fragment {
+public class NavigationActivityFragment extends Fragment implements View.OnClickListener{
+
 
     public NavigationActivityFragment() {
     }
@@ -18,5 +19,10 @@ public class NavigationActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_navigation_start, container, false);
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 }
