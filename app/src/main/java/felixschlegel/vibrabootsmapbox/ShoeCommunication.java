@@ -1,12 +1,15 @@
 package felixschlegel.vibrabootsmapbox;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ShoeCommunication {
 
@@ -17,8 +20,60 @@ public class ShoeCommunication {
     private String port = "1841";
 
 
-    private boolean hasRightShoe = true;
-    private boolean hasLeftShoe = true;
+    private boolean hasRightShoe = false;
+    private boolean hasLeftShoe = false;
+
+    public void runStatusChecks() {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkStatusRight();
+                                checkStatusLeft();
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 10000); //it executes this every 1000ms
+
+
+    }
+
+    private void checkStatusRight() {
+        String result = "";
+        try {
+            result = sendingGetRequest("http://" + ipRight + ":" + port + "/status");
+        } catch (Exception e) {
+            Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
+        }
+        if (result.equals("right")) {
+            hasRightShoe = true;
+        } else {
+            hasRightShoe = false;
+        }
+    }
+
+    private void checkStatusLeft() {
+        String result = "";
+        try {
+            result = sendingGetRequest("http://" + ipLeft + ":" + port + "/status");
+        } catch (Exception e) {
+            Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
+        }
+        if (result.equals("left")) {
+            hasLeftShoe = true;
+        } else {
+            hasLeftShoe = false;
+        }
+    }
 
     public boolean getStatusRight() {
         return hasRightShoe;
@@ -51,7 +106,7 @@ public class ShoeCommunication {
     }
 
     // HTTP GET request
-    private void sendingGetRequest(String msg) throws Exception {
+    private String sendingGetRequest(String msg) throws Exception {
 
         String urlString = (msg);
 
@@ -81,6 +136,8 @@ public class ShoeCommunication {
 
         //printing result from response
         System.out.println(response.toString());
+
+        return response.toString();
 
     }
 

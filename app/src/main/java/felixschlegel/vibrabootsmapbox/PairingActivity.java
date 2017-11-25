@@ -26,6 +26,7 @@ public class PairingActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     static boolean wifiIsActive;
+    private ShoeCommunication shoescom = new ShoeCommunication();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +106,7 @@ public class PairingActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_navigation) {
-            startActivity(navIntent);
+            shoescom.runStatusChecks();
         } else if (id == R.id.nav_pairing) {
             startActivity(pairIntent);
         } else if (id == R.id.nav_credits) {
