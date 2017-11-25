@@ -13,22 +13,17 @@ import android.widget.Button;
  * A placeholder fragment containing a simple view.
  */
 public class NavigationActivityFragment extends Fragment implements View.OnClickListener{
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-        Button btn = (Button) getActivity().findViewById(R.id.btnStart);
-        btn.setOnClickListener(this);
-    }
-
-    public NavigationActivityFragment() {
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_navigation_start, container, false);
+        if (container != null) {
+            container.removeAllViews();
+        }
+        View view = inflater.inflate(R.layout.fragment_navigation_start, container, false);
+        Button btn = (Button) view.findViewById(R.id.btnStart);
+        btn.setOnClickListener(this);
+        return view;
     }
 
     @Override

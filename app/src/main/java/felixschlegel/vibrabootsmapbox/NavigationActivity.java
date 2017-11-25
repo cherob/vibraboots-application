@@ -10,15 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-public class NavigationActivity extends AppCompatActivity implements FragmentChangeListener {
+public class NavigationActivity extends AppCompatActivity implements FragmentChangeListener{
 
 
     @Override
     public void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();;
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment, fragment, fragment.toString());
-        fragmentTransaction.addToBackStack(fragment.toString());
+        fragmentTransaction.replace(R.id.fragment, fragment);
+        //fragmentTransaction.addToBackStack(fragment.toString());
         fragmentTransaction.commit();
     }
 
