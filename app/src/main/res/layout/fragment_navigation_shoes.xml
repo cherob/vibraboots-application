@@ -4,6 +4,8 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_bright"
+    android:backgroundTint="@android:color/holo_blue_bright"
     tools:context="felixschlegel.vibrabootsmapbox.NavigationShoesFragment">
 
     <!-- TODO: Update blank fragment layout -->
