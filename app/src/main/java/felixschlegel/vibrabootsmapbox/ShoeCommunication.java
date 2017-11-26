@@ -8,25 +8,36 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ShoeCommunication {
+public class ShoeCommunication extends Observable{
 
     private final String USER_AGENT = "Mozilla/5.0";
 
 
     private String ipRight = "";
     private String ipLeft = "";
-    private String port = "1841";
+    private String port = "800";
 
     private boolean hasRightShoe = false;
     private boolean hasLeftShoe = false;
+    private boolean isScanRunning = false;
+
+    public  boolean getIsScanRunning(){
+        return isScanRunning;
+    }
 
     public void ipScan() {
             AsyncTask.execute(new Runnable() {
+
                 @Override
                 public void run() {
+                    if(isScanRunning){
+                        return;
+                    }
+                    isScanRunning = true;
                     boolean rightFound = false;
                     boolean leftFound = false;
                     for(int i=2; i<256; i++) {
@@ -38,16 +49,21 @@ public class ShoeCommunication {
                         }
                         if (result.equals("right")) {
                             ipRight = "192.168.43." + i;
+                            checkStatusRight();
                             rightFound = true;
                         }
                         else if (result.equals("left")) {
                             ipLeft = "192.168.43." + i;
+                            checkStatusLeft();
                             leftFound = true;
                         }
                         if(rightFound && leftFound) {
                             break;
                         }
                     }
+                    setChanged();
+                    notifyObservers();
+                    isScanRunning = false;
                 }
             });
     }
@@ -83,10 +99,15 @@ public class ShoeCommunication {
         } catch (Exception e) {
             Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
         }
+        boolean before = hasRightShoe;
         if (result.equals("right")) {
             hasRightShoe = true;
         } else {
             hasRightShoe = false;
+        }
+        if( hasRightShoe!=before ) {
+            setChanged();
+            notifyObservers();
         }
     }
 
@@ -97,10 +118,16 @@ public class ShoeCommunication {
         } catch (Exception e) {
             Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
         }
+
+        boolean before = hasLeftShoe;
         if (result.equals("left")) {
             hasLeftShoe = true;
         } else {
             hasLeftShoe = false;
+        }
+        if( hasLeftShoe!=before ) {
+            setChanged();
+            notifyObservers();
         }
     }
 

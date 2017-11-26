@@ -114,5 +114,19 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/inactive_left" />
 
+    <ProgressBar
+        android:id="@+id/search"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="@+id/image_stateRight"
+        app:layout_constraintStart_toStartOf="@+id/image_stateLeft"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.557" />
+
 
 </android.support.constraint.ConstraintLayout>

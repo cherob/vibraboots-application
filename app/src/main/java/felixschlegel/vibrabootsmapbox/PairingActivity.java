@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Observable;
@@ -28,16 +29,33 @@ public class PairingActivity extends AppCompatActivity
     private ImageView rightShoe;
     private Button cbutton_left;
     private Button cbutton_state;
+
+    private Button button_find;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private ImageView wifi;
     private TextView button;
+    private ProgressBar search;
     private Intent navIntent;
     private Intent pairIntent;
 
     @Override
     public void update(Observable o, Object arg) {
+        if (App.getInstance().getShoeCommunication().getStatusLeft() == true) {
+            leftShoe.setImageResource(R.drawable.green_left);
+        } else if (App.getInstance().getShoeCommunication().getStatusLeft() == false) {
+            leftShoe.setImageResource(R.drawable.red_left);
+        } else {
+            leftShoe.setImageResource(R.drawable.inactive_left);
+        }
 
+        if (App.getInstance().getShoeCommunication().getStatusRight() == true) {
+            rightShoe.setImageResource(R.drawable.green_right);
+        } else if (App.getInstance().getShoeCommunication().getStatusRight() == false) {
+            rightShoe.setImageResource(R.drawable.red_right);
+        } else {
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
     }
 
     @Override
@@ -58,6 +76,7 @@ public class PairingActivity extends AppCompatActivity
         cbutton_state = (Button) findViewById(R.id.button_state);
         cbutton_state.setOnClickListener(this);
 
+        button_find = (Button) findViewById(R.id.button_find);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -73,6 +92,8 @@ public class PairingActivity extends AppCompatActivity
         wifi = (ImageView) findViewById(R.id.image_wifi);
         button = (TextView)findViewById(R.id.button_state);
 
+        wifiIsActive = true;
+
         updateWifiState();
 
         //MapBox implementation
@@ -83,25 +104,7 @@ public class PairingActivity extends AppCompatActivity
     @Override
     protected void onPostResume() {
         super.onPostResume();
-
-        if (App.getInstance().getShoeCommunication().getStatusLeft() == true) {
-            leftShoe.setImageResource(R.drawable.green_left);
-        } else if (App.getInstance().getShoeCommunication().getStatusLeft() == false) {
-            leftShoe.setImageResource(R.drawable.red_left);
-        } else {
-            leftShoe.setImageResource(R.drawable.inactive_left);
-        }
-
-
-
-        if (App.getInstance().getShoeCommunication().getStatusRight() == true) {
-            rightShoe.setImageResource(R.drawable.green_right);
-        } else if (App.getInstance().getShoeCommunication().getStatusRight() == false) {
-            rightShoe.setImageResource(R.drawable.red_right);
-        } else {
-            rightShoe.setImageResource(R.drawable.inactive_right);
-        }
-
+        update(null, null);
 
         // TODO wifiIsActive = WifiAccessManager.getWifiApState(this);
 
@@ -178,13 +181,15 @@ public class PairingActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_find: {
+                App.getInstance().getShoeCommunication().ipScan();
+                search = (ProgressBar) findViewById(R.id.search);
+                button_find.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
                 break;
             }
 
             case R.id.button_state: {
-                wifi = (ImageView) findViewById(R.id.image_wifi);
-                button = (TextView)findViewById(R.id.button_state);
-                changeWiFiState();
+                //changeWiFiState();
                 break;
             }
         }
