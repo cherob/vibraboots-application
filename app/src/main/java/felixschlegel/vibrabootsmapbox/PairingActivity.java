@@ -1,12 +1,7 @@
 package felixschlegel.vibrabootsmapbox;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +15,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import static android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS;
 
 public class PairingActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Observer {
 
     static boolean wifiIsActive;
     private ImageView leftShoe;
@@ -38,6 +34,11 @@ public class PairingActivity extends AppCompatActivity
     private TextView button;
     private Intent navIntent;
     private Intent pairIntent;
+
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +68,12 @@ public class PairingActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        wifiIsActive = WifiAccessManager.getWifiApState(this);
+        // TODO wifiIsActive = WifiAccessManager.getWifiApState(this);
 
         wifi = (ImageView) findViewById(R.id.image_wifi);
         button = (TextView)findViewById(R.id.button_state);
-        presetWiFiState(button, wifi);
+
+        updateWifiState();
 
         //MapBox implementation
         //MapboxNavigation navigation = new MapboxNavigation(this, "sk.eyJ1IjoiZmxhZ3Bvc3QiLCJhIjoiY2phZjdvcGo2MXdpbzJ5anV6MHVyem92OCJ9.Mksti-6N6yCiDhyHM-lGcQ");
@@ -99,6 +101,11 @@ public class PairingActivity extends AppCompatActivity
         } else {
             rightShoe.setImageResource(R.drawable.inactive_right);
         }
+
+
+        // TODO wifiIsActive = WifiAccessManager.getWifiApState(this);
+
+        updateWifiState();
     }
 
     @Override
@@ -177,18 +184,18 @@ public class PairingActivity extends AppCompatActivity
             case R.id.button_state: {
                 wifi = (ImageView) findViewById(R.id.image_wifi);
                 button = (TextView)findViewById(R.id.button_state);
-                updateWiFiState(button, wifi);
+                changeWiFiState();
                 break;
             }
         }
     }
 
-    private void presetWiFiState(TextView button, ImageView wifi) {
-        if(!wifiIsActive) {
+    private void updateWifiState() {
+        if(wifiIsActive) {
             button.setText(R.string.title_state_online);
             wifi.setImageResource(R.drawable.wi_fi);
             App.getInstance().getShoeCommunication().runStatusChecks();
-        }else if(wifiIsActive){
+        }else if(!wifiIsActive){
             button.setText(R.string.title_state_offline);
             wifi.setImageResource(R.drawable.wi_fi_off);
             leftShoe.setImageResource(R.drawable.inactive_left);
@@ -196,7 +203,7 @@ public class PairingActivity extends AppCompatActivity
         }
     }
 
-    private void updateWiFiState(TextView button, ImageView wifi) {
+    private void changeWiFiState() {
         if(!wifiIsActive) {
             WifiAccessManager.setWifiApState(this, true);
             button.setText(R.string.title_state_online);
@@ -212,4 +219,6 @@ public class PairingActivity extends AppCompatActivity
             rightShoe.setImageResource(R.drawable.inactive_right);
         }
     }
+
+
 }
