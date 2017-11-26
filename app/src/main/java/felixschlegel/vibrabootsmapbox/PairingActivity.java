@@ -34,6 +34,10 @@ public class PairingActivity extends AppCompatActivity
     private Button cbutton_state;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
+    private ImageView wifi;
+    private TextView button;
+    private Intent navIntent;
+    private Intent pairIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,10 @@ public class PairingActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         wifiIsActive = WifiAccessManager.getWifiApState(this);
+
+        wifi = (ImageView) findViewById(R.id.image_wifi);
+        button = (TextView)findViewById(R.id.button_state);
+        presetWiFiState(button, wifi);
 
         //MapBox implementation
         //MapboxNavigation navigation = new MapboxNavigation(this, "sk.eyJ1IjoiZmxhZ3Bvc3QiLCJhIjoiY2phZjdvcGo2MXdpbzJ5anV6MHVyem92OCJ9.Mksti-6N6yCiDhyHM-lGcQ");
@@ -131,8 +139,8 @@ public class PairingActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         //define the Activity's
-        Intent navIntent = new Intent(this, NavigationActivity.class);
-        Intent pairIntent = new Intent(this, PairingActivity.class);
+        navIntent = new Intent(this, NavigationActivity.class);
+        pairIntent = new Intent(this, PairingActivity.class);
 
         //clear duplicated Activity's
         navIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -167,24 +175,41 @@ public class PairingActivity extends AppCompatActivity
             }
 
             case R.id.button_state: {
-                ImageView wifi=(ImageView) findViewById(R.id.image_wifi);
-                TextView button=(TextView)findViewById(R.id.button_state);
-                if(!wifiIsActive) {
-                    WifiAccessManager.setWifiApState(this, true);
-                    button.setText(R.string.title_state_online);
-                    wifi.setImageResource(R.drawable.wi_fi);
-                    wifiIsActive = true;
-                    App.getInstance().getShoeCommunication().runStatusChecks();
-                }else if(wifiIsActive){
-                    WifiAccessManager.setWifiApState(this, false);
-                    button.setText(R.string.title_state_offline);
-                    wifi.setImageResource(R.drawable.wi_fi_off);
-                    wifiIsActive = false;
-                    leftShoe.setImageResource(R.drawable.inactive_left);
-                    rightShoe.setImageResource(R.drawable.inactive_right);
-                }
+                wifi = (ImageView) findViewById(R.id.image_wifi);
+                button = (TextView)findViewById(R.id.button_state);
+                updateWiFiState(button, wifi);
                 break;
             }
+        }
+    }
+
+    private void presetWiFiState(TextView button, ImageView wifi) {
+        if(!wifiIsActive) {
+            button.setText(R.string.title_state_online);
+            wifi.setImageResource(R.drawable.wi_fi);
+            App.getInstance().getShoeCommunication().runStatusChecks();
+        }else if(wifiIsActive){
+            button.setText(R.string.title_state_offline);
+            wifi.setImageResource(R.drawable.wi_fi_off);
+            leftShoe.setImageResource(R.drawable.inactive_left);
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
+    }
+
+    private void updateWiFiState(TextView button, ImageView wifi) {
+        if(!wifiIsActive) {
+            WifiAccessManager.setWifiApState(this, true);
+            button.setText(R.string.title_state_online);
+            wifi.setImageResource(R.drawable.wi_fi);
+            wifiIsActive = true;
+            App.getInstance().getShoeCommunication().runStatusChecks();
+        }else if(wifiIsActive){
+            WifiAccessManager.setWifiApState(this, false);
+            button.setText(R.string.title_state_offline);
+            wifi.setImageResource(R.drawable.wi_fi_off);
+            wifiIsActive = false;
+            leftShoe.setImageResource(R.drawable.inactive_left);
+            rightShoe.setImageResource(R.drawable.inactive_right);
         }
     }
 }
