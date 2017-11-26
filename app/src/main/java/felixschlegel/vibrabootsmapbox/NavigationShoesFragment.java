@@ -7,6 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import static felixschlegel.vibrabootsmapbox.BlinkController.*;
+import static felixschlegel.vibrabootsmapbox.BlinkController.BLINKLEFT;
+import static felixschlegel.vibrabootsmapbox.BlinkController.BLINKRIGHT;
 
 
 /**
@@ -17,7 +25,7 @@ import android.view.ViewGroup;
  * Use the {@link NavigationShoesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NavigationShoesFragment extends Fragment {
+public class NavigationShoesFragment extends Fragment implements Observer{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,6 +36,8 @@ public class NavigationShoesFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private ImageView rightShoe;
+    private ImageView leftShoe;
 
     public NavigationShoesFragment() {
         // Required empty public constructor
@@ -58,6 +68,8 @@ public class NavigationShoesFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        App.getInstance().getBlinkController().startRun();
     }
 
     @Override
@@ -66,8 +78,11 @@ public class NavigationShoesFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
+        View view = inflater.inflate(R.layout.fragment_navigation_shoes, container, false);
+        leftShoe = (ImageView) view.findViewById(R.id.left_shoe);
+        rightShoe = (ImageView) view.findViewById(R.id.right_shoe);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_navigation_shoes, container, false);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -77,9 +92,17 @@ public class NavigationShoesFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        update(null,null);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        App.getInstance().getBlinkController().addObserver(this);
 //        if (context instanceof OnFragmentInteractionListener) {
 //            mListener = (OnFragmentInteractionListener) context;
 //        } else {
@@ -92,6 +115,34 @@ public class NavigationShoesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
+        App.getInstance().getBlinkController().deleteObserver(this);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        final int state = App.getInstance().getBlinkController().getState();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (state){
+                    case BLINKNONE:
+                        leftShoe.setImageResource(R.drawable.inactive_left);
+                        rightShoe.setImageResource(R.drawable.inactive_right);
+                        break;
+                    case BLINKLEFT:
+                        leftShoe.setImageResource(R.drawable.green_left);
+                        rightShoe.setImageResource(R.drawable.inactive_right);
+                        App.getInstance().getShoeCommunication().leftShoeAction(3);
+                        break;
+                    case BLINKRIGHT:
+                        leftShoe.setImageResource(R.drawable.inactive_left);
+                        rightShoe.setImageResource(R.drawable.green_right);
+                        App.getInstance().getShoeCommunication().rightShoeAction(3);
+                        break;
+                }
+            }
+        });
     }
 
     /**
@@ -105,7 +156,7 @@ public class NavigationShoesFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        //TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

@@ -42,18 +42,18 @@ public class NavigationActivityFragment extends Fragment implements View.OnClick
             case R.id.btnStart: {
                 String text = txt.getText().toString();
 
-                Geocoder geocoder = new Geocoder(getActivity());
-                List<Address> addresses;
-                try {
-                    addresses = geocoder.getFromLocationName(text, 1);
-                } catch (IOException e) {
-                    addresses = null;
-                    e.printStackTrace();
-                }
-                if(addresses.size() > 0) {
-                    double latitude= addresses.get(0).getLatitude();
-                    double longitude= addresses.get(0).getLongitude();
-                }
+//                Geocoder geocoder = new Geocoder(getActivity());
+//                List<Address> addresses;
+//                try {
+//                    addresses = geocoder.getFromLocationName(text, 1);
+//                } catch (IOException e) {
+//                    addresses = null;
+//                    e.printStackTrace();
+//                }
+//                if(addresses.size() > 0) {
+//                    double latitude= addresses.get(0).getLatitude();
+//                    double longitude= addresses.get(0).getLongitude();
+//                }
 
 
                 showOtherFragment();

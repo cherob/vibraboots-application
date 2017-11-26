@@ -9,6 +9,7 @@ import android.app.Application;
 public class App extends Application {
     private static App mInstance = null;
     private ShoeCommunication mShoes;
+    private BlinkController mBlink = new BlinkController();
 
     public static App getInstance() {
         return mInstance;
@@ -16,6 +17,10 @@ public class App extends Application {
 
     public ShoeCommunication getShoeCommunication(){
         return mShoes;
+    }
+
+    public BlinkController getBlinkController(){
+        return mBlink;
     }
 
     @Override
