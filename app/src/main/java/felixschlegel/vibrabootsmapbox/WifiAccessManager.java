@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
+import javax.crypto.Cipher;
+
 /**
  * Created by robin on 25.11.2017.
  */
@@ -11,6 +13,16 @@ import android.net.wifi.WifiManager;
 public class WifiAccessManager {
 
     private static final String SSID = "navshoes";
+
+    public static boolean getWifiApState(Context context){
+
+        WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if(mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED){
+            return true;
+        }
+        return false;
+    }
+
     public static boolean setWifiApState(Context context, boolean enabled) {
         //config = Preconditions.checkNotNull(config);
         try {

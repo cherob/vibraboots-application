@@ -1,12 +1,7 @@
 package felixschlegel.vibrabootsmapbox;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +15,30 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import static android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS;
 
 public class PairingActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Observer {
 
     static boolean wifiIsActive;
+    private ImageView leftShoe;
+    private ImageView rightShoe;
+    private Button cbutton_left;
+    private Button cbutton_state;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private ImageView wifi;
+    private TextView button;
+    private Intent navIntent;
+    private Intent pairIntent;
+
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +49,18 @@ public class PairingActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button cbutton_left = (Button) findViewById(R.id.button_find);
+
+        leftShoe = (ImageView) findViewById(R.id.image_stateLeft);
+        rightShoe = (ImageView) findViewById(R.id.image_stateRight);
+
+        cbutton_left = (Button) findViewById(R.id.button_find);
         cbutton_left.setOnClickListener(this);
-        Button cbutton_state = (Button) findViewById(R.id.button_state);
+        cbutton_state = (Button) findViewById(R.id.button_state);
         cbutton_state.setOnClickListener(this);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -51,9 +68,44 @@ public class PairingActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // TODO wifiIsActive = WifiAccessManager.getWifiApState(this);
+
+        wifi = (ImageView) findViewById(R.id.image_wifi);
+        button = (TextView)findViewById(R.id.button_state);
+
+        updateWifiState();
+
         //MapBox implementation
         //MapboxNavigation navigation = new MapboxNavigation(this, "sk.eyJ1IjoiZmxhZ3Bvc3QiLCJhIjoiY2phZjdvcGo2MXdpbzJ5anV6MHVyem92OCJ9.Mksti-6N6yCiDhyHM-lGcQ");
 
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        if (App.getInstance().getShoeCommunication().getStatusLeft() == true) {
+            leftShoe.setImageResource(R.drawable.green_left);
+        } else if (App.getInstance().getShoeCommunication().getStatusLeft() == false) {
+            leftShoe.setImageResource(R.drawable.red_left);
+        } else {
+            leftShoe.setImageResource(R.drawable.inactive_left);
+        }
+
+
+
+        if (App.getInstance().getShoeCommunication().getStatusRight() == true) {
+            rightShoe.setImageResource(R.drawable.green_right);
+        } else if (App.getInstance().getShoeCommunication().getStatusRight() == false) {
+            rightShoe.setImageResource(R.drawable.red_right);
+        } else {
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
+
+
+        // TODO wifiIsActive = WifiAccessManager.getWifiApState(this);
+
+        updateWifiState();
     }
 
     @Override
@@ -94,8 +146,8 @@ public class PairingActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         //define the Activity's
-        Intent navIntent = new Intent(this, NavigationActivity.class);
-        Intent pairIntent = new Intent(this, PairingActivity.class);
+        navIntent = new Intent(this, NavigationActivity.class);
+        pairIntent = new Intent(this, PairingActivity.class);
 
         //clear duplicated Activity's
         navIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -130,26 +182,43 @@ public class PairingActivity extends AppCompatActivity
             }
 
             case R.id.button_state: {
-                ImageView wifi=(ImageView) findViewById(R.id.image_wifi);
-                TextView button=(TextView)findViewById(R.id.button_state);
-                if(wifiIsActive == false) {
-                    WifiAccessManager.setWifiApState(this, true);
-                    button.setText(R.string.title_state_online);
-                    wifi.setImageResource(R.drawable.wi_fi);
-                    wifiIsActive = true;
-                }else if(wifiIsActive == true){
-                    WifiAccessManager.setWifiApState(this, false);
-                    button.setText(R.string.title_state_offline);
-                    wifi.setImageResource(R.drawable.wi_fi_off);
-                    wifiIsActive = false;
-                }else{
-                    WifiAccessManager.setWifiApState(this, true);
-                    button.setText(R.string.title_state_online);
-                    wifi.setImageResource(R.drawable.wi_fi);
-                    wifiIsActive = true;
-                }
+                wifi = (ImageView) findViewById(R.id.image_wifi);
+                button = (TextView)findViewById(R.id.button_state);
+                changeWiFiState();
                 break;
             }
         }
     }
+
+    private void updateWifiState() {
+        if(wifiIsActive) {
+            button.setText(R.string.title_state_online);
+            wifi.setImageResource(R.drawable.wi_fi);
+            App.getInstance().getShoeCommunication().runStatusChecks();
+        }else if(!wifiIsActive){
+            button.setText(R.string.title_state_offline);
+            wifi.setImageResource(R.drawable.wi_fi_off);
+            leftShoe.setImageResource(R.drawable.inactive_left);
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
+    }
+
+    private void changeWiFiState() {
+        if(!wifiIsActive) {
+            WifiAccessManager.setWifiApState(this, true);
+            button.setText(R.string.title_state_online);
+            wifi.setImageResource(R.drawable.wi_fi);
+            wifiIsActive = true;
+            App.getInstance().getShoeCommunication().runStatusChecks();
+        }else if(wifiIsActive){
+            WifiAccessManager.setWifiApState(this, false);
+            button.setText(R.string.title_state_offline);
+            wifi.setImageResource(R.drawable.wi_fi_off);
+            wifiIsActive = false;
+            leftShoe.setImageResource(R.drawable.inactive_left);
+            rightShoe.setImageResource(R.drawable.inactive_right);
+        }
+    }
+
+
 }

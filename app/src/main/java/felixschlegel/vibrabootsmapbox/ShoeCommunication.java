@@ -15,6 +15,7 @@ public class ShoeCommunication {
 
     private final String USER_AGENT = "Mozilla/5.0";
 
+
     private String ipRight = "";
     private String ipLeft = "";
     private String port = "1841";
