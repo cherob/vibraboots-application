@@ -15,12 +15,41 @@ public class ShoeCommunication {
 
     private final String USER_AGENT = "Mozilla/5.0";
 
-    private String ipRight = "192.168.43.47";
+    private String ipRight = "";
     private String ipLeft = "";
     private String port = "1841";
 
     private boolean hasRightShoe = false;
     private boolean hasLeftShoe = false;
+
+    public void ipScan() {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    boolean rightFound = false;
+                    boolean leftFound = false;
+                    for(int i=2; i<256; i++) {
+                        String result = "";
+                        try {
+                            result = sendingGetRequest("http://192.168.43." + i + ":" + port + "/status", 300);
+                        } catch (Exception e) {
+                            Log.d(ShoeCommunication.class.getName(), "No shoe found at http://192.168.43." + i);
+                        }
+                        if (result.equals("right")) {
+                            ipRight = "192.168.43." + i;
+                            rightFound = true;
+                        }
+                        else if (result.equals("left")) {
+                            ipLeft = "192.168.43." + i;
+                            leftFound = true;
+                        }
+                        if(rightFound && leftFound) {
+                            break;
+                        }
+                    }
+                }
+            });
+    }
 
     public void runStatusChecks() {
         final Handler handler = new Handler();
@@ -49,7 +78,7 @@ public class ShoeCommunication {
     private void checkStatusRight() {
         String result = "";
         try {
-            result = sendingGetRequest("http://" + ipRight + ":" + port + "/status");
+            result = sendingGetRequest("http://" + ipRight + ":" + port + "/status", 5000);
         } catch (Exception e) {
             Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
         }
@@ -63,7 +92,7 @@ public class ShoeCommunication {
     private void checkStatusLeft() {
         String result = "";
         try {
-            result = sendingGetRequest("http://" + ipLeft + ":" + port + "/status");
+            result = sendingGetRequest("http://" + ipLeft + ":" + port + "/status", 5000);
         } catch (Exception e) {
             Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
         }
@@ -87,7 +116,7 @@ public class ShoeCommunication {
             @Override
             public void run() {
                 try {
-                    sendingGetRequest("http://" + ipRight + ":" + port + "/vibrate?times=" + times);
+                    sendingGetRequest("http://" + ipRight + ":" + port + "/vibrate?times=" + times, 5000);
                 }
                 catch (Exception e) {
                     Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
@@ -98,7 +127,7 @@ public class ShoeCommunication {
 
     public void leftShoeAction(int times){
         try {
-            sendingGetRequest("vibrate?times=" + times);
+            sendingGetRequest("vibrate?times=" + times, 5000);
         }
         catch (Exception e) {
             Log.d(ShoeCommunication.class.getName(), "An Error Ocurred, Sending Data");
@@ -106,7 +135,7 @@ public class ShoeCommunication {
     }
 
     // HTTP GET request
-    private String sendingGetRequest(String msg) throws Exception {
+    private String sendingGetRequest(String msg, int conTimeout) throws Exception {
 
         String urlString = (msg);
 
@@ -118,6 +147,8 @@ public class ShoeCommunication {
 
         //add request header
         con.setRequestProperty("User-Agent", USER_AGENT);
+
+        con.setConnectTimeout(conTimeout);
 
         int responseCode = con.getResponseCode();
         System.out.println("Sending get request : "+ url);
